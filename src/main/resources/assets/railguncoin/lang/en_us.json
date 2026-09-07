@@ -1,0 +1,9 @@
+{
+  "item.railguncoin.silver_coin": "Electromagnetic Coin",
+  "advancements.railguncoin.a_certain_scientific.title": "A Certain Scientific...",
+  "advancements.railguncoin.a_certain_scientific.description": "Fire a coin from a railgun",
+  "death.attack.railguncoin.coin_impact": "%1$s was pierced by an electromagnetic coin",
+  "death.attack.railguncoin.coin_impact.player": "%1$s was pierced by %2$s's electromagnetic coin",
+  "death.attack.railguncoin.misfire": "%1$s's railgun misfired",
+  "subtitles.railguncoin.lock_on": "Target locked"
+}
