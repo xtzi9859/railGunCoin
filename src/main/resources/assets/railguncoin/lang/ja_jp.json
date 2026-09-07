@@ -1,9 +1,9 @@
 {
-  "item.railguncoin.silver_coin": "超電磁コイン",
+  "item.railguncoin.silver_coin": "コイン",
   "advancements.railguncoin.a_certain_scientific.title": "とある科学の…",
   "advancements.railguncoin.a_certain_scientific.description": "コインをレールガンで発射する",
-  "death.attack.railguncoin.coin_impact": "%1$sは超電磁コインに撃ち抜かれた",
-  "death.attack.railguncoin.coin_impact.player": "%1$sは%2$sの超電磁コインに撃ち抜かれた",
+  "death.attack.railguncoin.coin_impact": "%1$sはコインに撃ち抜かれた",
+  "death.attack.railguncoin.coin_impact.player": "%1$sは%2$sのコインに撃ち抜かれた",
   "death.attack.railguncoin.misfire": "%1$sのレールガンが暴発した",
   "subtitles.railguncoin.lock_on": "照準が対象を捕捉する"
 }
