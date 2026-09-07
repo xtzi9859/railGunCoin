@@ -1,0 +1,13 @@
+{
+  "type": "create:pressing",
+  "ingredients": [
+    {
+      "tag": "c:nuggets/silver"
+    }
+  ],
+  "results": [
+    {
+      "id": "railguncoin:silver_coin"
+    }
+  ]
+}

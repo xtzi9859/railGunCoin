@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "id": "railguncoin:silver_coin"
+    },
+    "title": {
+      "translate": "advancements.railguncoin.a_certain_scientific.title"
+    },
+    "description": {
+      "translate": "advancements.railguncoin.a_certain_scientific.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "fired_coin": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "fired_coin"
+    ]
+  ]
+}
