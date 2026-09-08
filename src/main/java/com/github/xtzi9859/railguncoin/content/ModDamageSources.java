@@ -1,6 +1,6 @@
-package jp.example.railguncoin.content;
+package com.github.xtzi9859.railguncoin.content;
 
-import jp.example.railguncoin.RailgunCoinMod;
+import com.github.xtzi9859.railguncoin.RailgunCoinMod;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -12,8 +12,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import javax.annotation.Nullable;
-
 import javax.annotation.Nullable;
 
 public final class ModDamageSources {

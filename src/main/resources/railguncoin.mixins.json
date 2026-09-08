@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "jp.example.railguncoin.mixin",
+  "package": "com.github.xtzi9859.railguncoin.mixin",
   "compatibilityLevel": "JAVA_21",
   "refmap": "railguncoin.refmap.json",
   "mixins": [

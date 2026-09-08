@@ -1,6 +1,6 @@
-package jp.example.railguncoin.registry;
+package com.github.xtzi9859.railguncoin.registry;
 
-import jp.example.railguncoin.RailgunCoinMod;
+import com.github.xtzi9859.railguncoin.RailgunCoinMod;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;

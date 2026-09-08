@@ -1,9 +1,9 @@
-package jp.example.railguncoin.event;
+package com.github.xtzi9859.railguncoin.event;
 
 import blusunrize.immersiveengineering.common.items.RailgunItem;
-import jp.example.railguncoin.RailgunCoinMod;
-import jp.example.railguncoin.content.LockOnTargeting;
-import jp.example.railguncoin.content.ModDamageSources;
+import com.github.xtzi9859.railguncoin.RailgunCoinMod;
+import com.github.xtzi9859.railguncoin.content.LockOnTargeting;
+import com.github.xtzi9859.railguncoin.content.ModDamageSources;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;

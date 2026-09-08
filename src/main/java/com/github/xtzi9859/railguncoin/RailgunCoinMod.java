@@ -1,11 +1,11 @@
-package jp.example.railguncoin;
+package com.github.xtzi9859.railguncoin;
 
 import blusunrize.immersiveengineering.api.tool.RailgunHandler;
-import jp.example.railguncoin.content.CoinProjectileProperties;
-import jp.example.railguncoin.registry.ModEntityTypes;
-import jp.example.railguncoin.registry.ModItems;
-import jp.example.railguncoin.registry.ModParticles;
-import jp.example.railguncoin.registry.ModSounds;
+import com.github.xtzi9859.railguncoin.content.CoinProjectileProperties;
+import com.github.xtzi9859.railguncoin.registry.ModEntityTypes;
+import com.github.xtzi9859.railguncoin.registry.ModItems;
+import com.github.xtzi9859.railguncoin.registry.ModParticles;
+import com.github.xtzi9859.railguncoin.registry.ModSounds;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;

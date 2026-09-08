@@ -1,7 +1,7 @@
-package jp.example.railguncoin.content;
+package com.github.xtzi9859.railguncoin.content;
 
 import blusunrize.immersiveengineering.common.items.RailgunItem;
-import jp.example.railguncoin.registry.ModItems;
+import com.github.xtzi9859.railguncoin.registry.ModItems;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;

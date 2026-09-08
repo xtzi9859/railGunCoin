@@ -1,8 +1,8 @@
-package jp.example.railguncoin.client;
+package com.github.xtzi9859.railguncoin.client;
 
-import jp.example.railguncoin.RailgunCoinMod;
-import jp.example.railguncoin.registry.ModEntityTypes;
-import jp.example.railguncoin.registry.ModParticles;
+import com.github.xtzi9859.railguncoin.RailgunCoinMod;
+import com.github.xtzi9859.railguncoin.registry.ModEntityTypes;
+import com.github.xtzi9859.railguncoin.registry.ModParticles;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

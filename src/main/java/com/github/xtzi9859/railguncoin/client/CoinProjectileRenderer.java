@@ -1,10 +1,10 @@
-package jp.example.railguncoin.client;
+package com.github.xtzi9859.railguncoin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import jp.example.railguncoin.RailgunCoinMod;
-import jp.example.railguncoin.content.CoinProjectileEntity;
+import com.github.xtzi9859.railguncoin.RailgunCoinMod;
+import com.github.xtzi9859.railguncoin.content.CoinProjectileEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;

@@ -1,7 +1,7 @@
-package jp.example.railguncoin.registry;
+package com.github.xtzi9859.railguncoin.registry;
 
-import jp.example.railguncoin.RailgunCoinMod;
-import jp.example.railguncoin.content.CoinProjectileEntity;
+import com.github.xtzi9859.railguncoin.RailgunCoinMod;
+import com.github.xtzi9859.railguncoin.content.CoinProjectileEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;

@@ -1,7 +1,7 @@
-package jp.example.railguncoin.content;
+package com.github.xtzi9859.railguncoin.content;
 
 import blusunrize.immersiveengineering.api.tool.RailgunHandler;
-import jp.example.railguncoin.RailgunCoinMod;
+import com.github.xtzi9859.railguncoin.RailgunCoinMod;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;

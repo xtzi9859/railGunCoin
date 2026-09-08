@@ -1,8 +1,9 @@
-package jp.example.railguncoin.content;
+package com.github.xtzi9859.railguncoin.content;
 
 import blusunrize.immersiveengineering.common.entities.IEProjectileEntity;
-import jp.example.railguncoin.registry.ModEntityTypes;
-import jp.example.railguncoin.registry.ModParticles;
+import com.github.xtzi9859.railguncoin.registry.ModEntityTypes;
+import com.github.xtzi9859.railguncoin.registry.ModParticles;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -21,8 +22,7 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 public final class CoinProjectileEntity extends IEProjectileEntity {
-    private static final double TRAIL_SPACING = 4.0D;
-    private static final double HOMING_STRENGTH = 0.25D;
+    private static final double TRAIL_SPACING = 1.0D;
     private static final float FLIGHT_SPEED = 8.0F;
 
     @Nullable
@@ -43,35 +43,48 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
     @Override
     public void tick() {
         Vec3 start = position();
-        if (!level().isClientSide) {
-            steerTowardTarget();
+        if (level() instanceof ServerLevel serverLevel) {
+            EntityHitResult guaranteedHit = steerTowardTarget();
+            if (guaranteedHit != null) {
+                Vec3 hitLocation = guaranteedHit.getLocation();
+                setPos(hitLocation.x, hitLocation.y, hitLocation.z);
+                emitTrail(serverLevel, start, hitLocation);
+                onHitEntity(guaranteedHit);
+                return;
+            }
         }
         super.tick();
-        if (level().isClientSide) {
-            emitTrail(start, position());
+        if (level() instanceof ServerLevel serverLevel) {
+            emitTrail(serverLevel, start, position());
         }
     }
 
-    private void steerTowardTarget() {
+    @Nullable
+    private EntityHitResult steerTowardTarget() {
         LivingEntity target = getTarget();
-        if (target == null || !target.isAlive() || !hasClearPath(target)) {
-            return;
+        if (target == null || !target.isAlive()) {
+            return null;
         }
         Vec3 current = getDeltaMovement();
-        Vec3 desired = target.getEyePosition().subtract(position());
-        if (current.lengthSqr() < 0.0001D || desired.lengthSqr() < 0.0001D) {
-            return;
+        Vec3 aimPoint = getAimPoint(target);
+        Vec3 toTarget = aimPoint.subtract(position());
+        if (current.lengthSqr() < 0.0001D || toTarget.lengthSqr() < 0.0001D || !hasClearPath(aimPoint)) {
+            return null;
         }
         double speed = current.length();
-        Vec3 redirected = current.normalize().scale(1.0D - HOMING_STRENGTH)
-                .add(desired.normalize().scale(HOMING_STRENGTH))
-                .normalize().scale(speed);
-        setDeltaMovement(redirected);
+        double distance = toTarget.length();
+        setDeltaMovement(toTarget.scale(Math.min(speed, distance) / distance));
+        return distance <= speed ? new EntityHitResult(target, aimPoint) : null;
     }
 
-    private boolean hasClearPath(LivingEntity target) {
+    private static Vec3 getAimPoint(LivingEntity target) {
+        double verticalInset = Math.min(0.5D, target.getBbHeight() * 0.15D);
+        return target.getEyePosition().add(0.0D, -verticalInset, 0.0D);
+    }
+
+    private boolean hasClearPath(Vec3 aimPoint) {
         BlockHitResult obstruction = level().clip(new ClipContext(
-                position(), target.getEyePosition(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this
+                position(), aimPoint, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this
         ));
         return obstruction.getType() == HitResult.Type.MISS;
     }
@@ -85,7 +98,7 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
         return target instanceof LivingEntity living ? living : null;
     }
 
-    private void emitTrail(Vec3 start, Vec3 end) {
+    private void emitTrail(ServerLevel serverLevel, Vec3 start, Vec3 end) {
         Vec3 segment = end.subtract(start);
         double length = segment.length();
         if (length < 0.0001D) {
@@ -95,8 +108,13 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
         double along = distanceToNextRing;
         while (along <= length) {
             Vec3 point = start.add(direction.scale(along));
-            level().addParticle(ModParticles.SONIC_RING.get(), point.x, point.y, point.z,
-                    direction.x, direction.y, direction.z);
+            serverLevel.sendParticles(
+                    ModParticles.SONIC_RING.get(),
+                    point.x, point.y, point.z,
+                    1,
+                    0.0D, 0.0D, 0.0D,
+                    0.0D
+            );
             along += TRAIL_SPACING;
         }
         distanceToNextRing = along - length;
@@ -120,7 +138,16 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
     }
 
     private void explode(Vec3 position) {
-        level().explode(this, position.x, position.y, position.z, 6.0F, false, Level.ExplosionInteraction.NONE);
+        if (level() instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(
+                    ParticleTypes.EXPLOSION_EMITTER,
+                    position.x, position.y, position.z,
+                    1,
+                    0.0D, 0.0D, 0.0D,
+                    0.0D
+            );
+        }
+        level().explode(this, position.x, position.y, position.z, 10.0F, false, Level.ExplosionInteraction.NONE);
     }
 
     @Override
