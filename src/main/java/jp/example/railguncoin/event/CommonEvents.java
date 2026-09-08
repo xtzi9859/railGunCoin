@@ -15,8 +15,8 @@ import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 
 @EventBusSubscriber(modid = RailgunCoinMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public final class CommonEvents {
-    private static final int OVERCHARGE_TICKS = 6 * 20;
-    private static final int FUSE_WARNING_TICKS = 20;
+    private static final int OVERCHARGE_TICKS = 4 * 20;
+    private static final int FUSE_WARNING_TICKS = 30;
 
     private CommonEvents() {
     }

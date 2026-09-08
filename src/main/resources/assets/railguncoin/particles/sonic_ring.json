@@ -1,5 +1,20 @@
 {
   "textures": [
-    "railguncoin:sonic_ring"
+    "railguncoin:sonic_ring_0",
+    "railguncoin:sonic_ring_1",
+    "railguncoin:sonic_ring_2",
+    "railguncoin:sonic_ring_3",
+    "railguncoin:sonic_ring_4",
+    "railguncoin:sonic_ring_5",
+    "railguncoin:sonic_ring_6",
+    "railguncoin:sonic_ring_7",
+    "railguncoin:sonic_ring_8",
+    "railguncoin:sonic_ring_9",
+    "railguncoin:sonic_ring_10",
+    "railguncoin:sonic_ring_11",
+    "railguncoin:sonic_ring_12",
+    "railguncoin:sonic_ring_13",
+    "railguncoin:sonic_ring_14",
+    "railguncoin:sonic_ring_15"
   ]
 }
