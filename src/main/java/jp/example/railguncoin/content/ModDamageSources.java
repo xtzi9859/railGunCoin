@@ -8,6 +8,11 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import javax.annotation.Nullable;
 
 import javax.annotation.Nullable;
 
@@ -22,8 +27,13 @@ public final class ModDamageSources {
         return new DamageSource(holder(level, COIN_IMPACT), projectile, owner);
     }
 
-    public static DamageSource misfire(Level level, Entity player) {
-        return new DamageSource(holder(level, MISFIRE), player);
+    public static DamageSource misfire(Level level, Entity player, ItemStack railgun) {
+        Component customName = railgun.get(DataComponents.CUSTOM_NAME);
+        return new MisfireDamageSource(
+                holder(level, MISFIRE),
+                player,
+                customName == null ? null : customName.copy()
+        );
     }
 
     private static Holder.Reference<DamageType> holder(Level level, ResourceKey<DamageType> key) {
@@ -32,5 +42,35 @@ public final class ModDamageSources {
 
     private static ResourceKey<DamageType> key(String path) {
         return ResourceKey.create(Registries.DAMAGE_TYPE, RailgunCoinMod.id(path));
+    }
+
+    private static final class MisfireDamageSource extends DamageSource {
+        @Nullable
+        private final Component railgunName;
+
+        private MisfireDamageSource(
+                Holder<DamageType> type,
+                Entity player,
+                @Nullable Component railgunName
+        ) {
+            super(type, player);
+            this.railgunName = railgunName;
+        }
+
+        @Override
+        public Component getLocalizedDeathMessage(LivingEntity victim) {
+            if (railgunName != null) {
+                return Component.translatable(
+                        "death.attack.railguncoin.misfire.named",
+                        victim.getDisplayName(),
+                        railgunName
+                );
+            }
+
+            return  Component.translatable(
+                    "death.attack.railguncoin.misfire",
+                    victim.getDisplayName()
+            );
+        }
     }
 }
