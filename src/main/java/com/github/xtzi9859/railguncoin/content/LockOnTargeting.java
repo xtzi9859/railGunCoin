@@ -2,7 +2,6 @@ package com.github.xtzi9859.railguncoin.content;
 
 import blusunrize.immersiveengineering.common.items.RailgunItem;
 import com.github.xtzi9859.railguncoin.registry.ModItems;
-import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -55,7 +54,7 @@ public final class LockOnTargeting {
     }
 
     private static boolean isValid(Player player, Monster mob, Vec3 eyes, Vec3 view) {
-        if (!mob.isAlive() || mob instanceof EnderMan || player.distanceToSqr(mob) > RANGE * RANGE) {
+        if (!mob.isAlive() || player.distanceToSqr(mob) > RANGE * RANGE) {
             return false;
         }
         Vec3 target = mob.getEyePosition().subtract(eyes);
