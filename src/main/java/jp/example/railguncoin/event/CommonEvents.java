@@ -43,6 +43,11 @@ public final class CommonEvents {
     }
 
     private static void selfDestruct(ServerPlayer player, ItemStack railgun) {
+        var source = ModDamageSources.misfire(
+                player.level(),
+                player,
+                railgun
+        );
         ItemStack ammo = RailgunItem.findAmmo(railgun, player);
         if (!ammo.isEmpty()) {
             ammo.shrink(1);
@@ -50,7 +55,6 @@ public final class CommonEvents {
         player.setItemInHand(player.getUsedItemHand(), ItemStack.EMPTY);
         player.stopUsingItem();
 
-        var source = ModDamageSources.misfire(player.level(), player);
         player.hurt(source, Float.MAX_VALUE);
         if (player.isAlive()) {
             player.setHealth(0.0F);
