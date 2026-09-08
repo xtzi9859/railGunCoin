@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -36,7 +35,7 @@ public final class ClientLockOnEvents {
         if (minecraft.player == null || event.getEntity() != minecraft.player) {
             return;
         }
-        Monster target = LockOnTargeting.findTarget(minecraft.player);
+        LivingEntity target = LockOnTargeting.findTarget(minecraft.player);
         int nextId = target == null ? -1 : target.getId();
         if (nextId != -1 && nextId != lockedEntityId) {
             minecraft.player.playSound(ModSounds.LOCK_ON.value(), 0.8F, 1.0F);

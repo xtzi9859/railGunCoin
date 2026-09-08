@@ -2,7 +2,8 @@ package com.github.xtzi9859.railguncoin.content;
 
 import blusunrize.immersiveengineering.common.items.RailgunItem;
 import com.github.xtzi9859.railguncoin.registry.ModItems;
-import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -33,7 +34,7 @@ public final class LockOnTargeting {
     }
 
     @Nullable
-    public static Monster findTarget(Player player) {
+    public static LivingEntity findTarget(Player player) {
         if (!isHoldingLoadedCoinRailgun(player)) {
             return null;
         }
@@ -41,19 +42,19 @@ public final class LockOnTargeting {
     }
 
     @Nullable
-    public static Monster findVisibleTarget(Player player) {
+    public static LivingEntity findVisibleTarget(Player player) {
         Vec3 eyes = player.getEyePosition();
         Vec3 view = player.getViewVector(1.0F).normalize();
         return player.level().getEntitiesOfClass(
-                        Monster.class,
+                        LivingEntity.class,
                         player.getBoundingBox().inflate(RANGE),
-                        mob -> isValid(player, mob, eyes, view)
+                        mob -> mob instanceof Enemy && isValid(player, mob, eyes, view)
                 ).stream()
                 .min(Comparator.comparingDouble(player::distanceToSqr))
                 .orElse(null);
     }
 
-    private static boolean isValid(Player player, Monster mob, Vec3 eyes, Vec3 view) {
+    private static boolean isValid(Player player, LivingEntity mob, Vec3 eyes, Vec3 view) {
         if (!mob.isAlive() || player.distanceToSqr(mob) > RANGE * RANGE) {
             return false;
         }

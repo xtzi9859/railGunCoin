@@ -7,7 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -24,7 +24,7 @@ public final class CoinProjectileProperties implements RailgunHandler.IRailgunPr
         if (shooter == null) {
             return defaultProjectile;
         }
-        Monster target = LockOnTargeting.findVisibleTarget(shooter);
+        LivingEntity target = LockOnTargeting.findVisibleTarget(shooter);
         shooter.level().playSound(
                 null, shooter.getX(), shooter.getY(), shooter.getZ(),
                 SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 1.0F, 1.0F
