@@ -61,6 +61,6 @@ public final class CommonEvents {
             player.die(source);
         }
         player.level().explode(player, player.getX(), player.getY(), player.getZ(),
-                6.0F, false, Level.ExplosionInteraction.NONE);
+                8.0F, false, Level.ExplosionInteraction.NONE);
     }
 }

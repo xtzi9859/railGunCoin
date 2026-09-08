@@ -11,6 +11,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -147,7 +149,22 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
                     0.0D
             );
         }
-        level().explode(this, position.x, position.y, position.z, 10.0F, false, Level.ExplosionInteraction.NONE);
+        Entity shooter = getOwner();
+        ExplosionDamageCalculator damageCalculator = new ExplosionDamageCalculator() {
+            @Override
+            public boolean shouldDamageEntity(Explosion explosion, Entity entity) {
+                return entity != shooter;
+            }
+        };
+        level().explode(
+                this,
+                null,
+                damageCalculator,
+                position,
+                8.0F,
+                false,
+                Level.ExplosionInteraction.NONE
+        );
     }
 
     @Override
