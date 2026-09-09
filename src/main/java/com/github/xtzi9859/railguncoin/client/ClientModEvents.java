@@ -17,6 +17,8 @@ public final class ClientModEvents {
     @SubscribeEvent
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticles.SONIC_RING.get(), SonicRingParticle.Provider::new);
+        event.registerSpriteSet(ModParticles.SONIC_RING_CHARGED.get(), SonicRingParticle.Provider::new);
+        event.registerSpecial(ModParticles.NO_EXPLOSION.get(), (type, level, x, y, z, xd, yd, zd) -> null);
     }
 
     @SubscribeEvent

@@ -15,6 +15,12 @@ public final class ModParticles {
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SONIC_RING = REGISTER.register(
             "sonic_ring", () -> new SimpleParticleType(false)
     );
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SONIC_RING_CHARGED = REGISTER.register(
+            "sonic_ring_charged", () -> new SimpleParticleType(false)
+    );
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> NO_EXPLOSION = REGISTER.register(
+            "no_explosion", () -> new SimpleParticleType(false)
+    );
 
     private ModParticles() {
     }

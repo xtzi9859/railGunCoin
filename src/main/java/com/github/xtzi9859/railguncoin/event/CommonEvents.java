@@ -16,8 +16,11 @@ import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 @EventBusSubscriber(modid = RailgunCoinMod.MOD_ID)
 @SuppressWarnings("resource")
 public final class CommonEvents {
-    private static final int OVERCHARGE_TICKS = 4 * 20;
+    private static final int NORMAL_OVERCHARGE_TICKS = 4 * 20;
+    private static final int CHARGED_OVERCHARGE_TICKS = 3 * 20;
     private static final int FUSE_WARNING_TICKS = 30;
+    private static final float NORMAL_EXPLOSION_POWER = 4.0F;
+    private static final float CHARGED_EXPLOSION_POWER = 7.0F;
 
     private CommonEvents() {
     }
@@ -32,18 +35,21 @@ public final class CommonEvents {
             return;
         }
 
-        int detonationTick = RailgunItem.getChargeTime(railgun) + OVERCHARGE_TICKS;
+        ItemStack ammo = RailgunItem.findAmmo(railgun, player);
+        boolean charged = LockOnTargeting.isChargedCoin(ammo);
+        int overchargeTicks = charged ? CHARGED_OVERCHARGE_TICKS : NORMAL_OVERCHARGE_TICKS;
+        int detonationTick = RailgunItem.getChargeTime(railgun) + overchargeTicks;
         int ticksUsing = player.getTicksUsingItem();
         if (ticksUsing == detonationTick - FUSE_WARNING_TICKS) {
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.CREEPER_PRIMED, SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         if (ticksUsing >= detonationTick) {
-            selfDestruct(player, railgun);
+            selfDestruct(player, railgun, charged);
         }
     }
 
-    private static void selfDestruct(ServerPlayer player, ItemStack railgun) {
+    private static void selfDestruct(ServerPlayer player, ItemStack railgun, boolean charged) {
         var source = ModDamageSources.misfire(
                 player.level(),
                 player,
@@ -62,6 +68,7 @@ public final class CommonEvents {
             player.die(source);
         }
         player.level().explode(player, player.getX(), player.getY(), player.getZ(),
-                8.0F, false, Level.ExplosionInteraction.NONE);
+                charged ? CHARGED_EXPLOSION_POWER : NORMAL_EXPLOSION_POWER,
+                false, Level.ExplosionInteraction.NONE);
     }
 }

@@ -25,10 +25,16 @@ public final class RailgunCoinMod {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> RailgunHandler.registerProjectile(
-                () -> net.minecraft.world.item.crafting.Ingredient.of(ModItems.SILVER_COIN.get()),
-                CoinProjectileProperties.INSTANCE
-        ));
+        event.enqueueWork(() -> {
+            RailgunHandler.registerProjectile(
+                    () -> net.minecraft.world.item.crafting.Ingredient.of(ModItems.SILVER_COIN.get()),
+                    CoinProjectileProperties.NORMAL
+            );
+            RailgunHandler.registerProjectile(
+                    () -> net.minecraft.world.item.crafting.Ingredient.of(ModItems.CHARGED_COIN.get()),
+                    CoinProjectileProperties.CHARGED
+            );
+        });
     }
 
     public static ResourceLocation id(String path) {

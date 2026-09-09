@@ -1,9 +1,11 @@
 package com.github.xtzi9859.railguncoin.content;
 
 import blusunrize.immersiveengineering.common.items.RailgunItem;
+import blusunrize.immersiveengineering.common.util.EnergyHelper;
 import com.github.xtzi9859.railguncoin.registry.ModItems;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +28,8 @@ public final class LockOnTargeting {
     public static boolean isHoldingLoadedCoinRailgun(Player player) {
         for (ItemStack held : new ItemStack[]{player.getMainHandItem(), player.getOffhandItem()}) {
             if (held.getItem() instanceof RailgunItem
-                    && RailgunItem.findAmmo(held, player).is(ModItems.SILVER_COIN.get())) {
+                    && EnergyHelper.getEnergyStored(held) > 0
+                    && isCoinAmmo(RailgunItem.findAmmo(held, player))) {
                 return true;
             }
         }
@@ -35,7 +38,15 @@ public final class LockOnTargeting {
 
     public static boolean hasSelectedCoinAmmo(ItemStack railgun, Player player) {
         return railgun.getItem() instanceof RailgunItem
-                && RailgunItem.findAmmo(railgun, player).is(ModItems.SILVER_COIN.get());
+                && isCoinAmmo(RailgunItem.findAmmo(railgun, player));
+    }
+
+    public static boolean isCoinAmmo(ItemStack stack) {
+        return stack.is(ModItems.SILVER_COIN.get()) || isChargedCoin(stack);
+    }
+
+    public static boolean isChargedCoin(ItemStack stack) {
+        return stack.is(ModItems.CHARGED_COIN.get());
     }
 
     @Nullable
@@ -56,9 +67,13 @@ public final class LockOnTargeting {
                         mob -> mob instanceof Enemy && isValid(player, mob, eyes, view)
                 ).stream()
                 .min(Comparator
-                        .comparingInt((LivingEntity mob) -> mob instanceof EnderDragon ? 0 : 1)
+                        .comparingInt(LockOnTargeting::targetPriority)
                         .thenComparingDouble(mob -> getAimPoint(mob).distanceToSqr(eyes)))
                 .orElse(null);
+    }
+
+    private static int targetPriority(LivingEntity target) {
+        return target instanceof EnderDragon || target instanceof WitherBoss ? 0 : 1;
     }
 
     private static boolean isValid(Player player, LivingEntity mob, Vec3 eyes, Vec3 view) {

@@ -40,3 +40,10 @@ type="required"
 versionRange="[6.0.10,)"
 ordering="AFTER"
 side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="createaddition"
+type="required"
+versionRange="[1.6.0,1.7.0)"
+ordering="AFTER"
+side="BOTH"

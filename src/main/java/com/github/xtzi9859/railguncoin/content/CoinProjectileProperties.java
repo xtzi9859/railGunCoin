@@ -1,6 +1,7 @@
 package com.github.xtzi9859.railguncoin.content;
 
 import blusunrize.immersiveengineering.api.tool.RailgunHandler;
+import blusunrize.immersiveengineering.common.items.RailgunItem;
 import com.github.xtzi9859.railguncoin.RailgunCoinMod;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,9 +15,14 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nullable;
 
 public final class CoinProjectileProperties implements RailgunHandler.IRailgunProjectile {
-    public static final CoinProjectileProperties INSTANCE = new CoinProjectileProperties();
+    public static final CoinProjectileProperties NORMAL = new CoinProjectileProperties(false);
+    public static final CoinProjectileProperties CHARGED = new CoinProjectileProperties(true);
+    private static final float CHARGED_COIN_RECOIL_DAMAGE = 17.0F;
 
-    private CoinProjectileProperties() {
+    private final boolean charged;
+
+    private CoinProjectileProperties(boolean charged) {
+        this.charged = charged;
     }
 
     @Override
@@ -30,6 +36,14 @@ public final class CoinProjectileProperties implements RailgunHandler.IRailgunPr
                 SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 1.0F, 1.0F
         );
         if (shooter instanceof ServerPlayer serverPlayer) {
+            if (charged) {
+                serverPlayer.hurt(
+                        ModDamageSources.recoil(
+                                serverPlayer.level(), serverPlayer, findHeldRailgun(serverPlayer)
+                        ),
+                        CHARGED_COIN_RECOIL_DAMAGE
+                );
+            }
             AdvancementHolder advancement = serverPlayer.server.getAdvancements().get(
                     RailgunCoinMod.id("a_certain_scientific")
             );
@@ -37,7 +51,7 @@ public final class CoinProjectileProperties implements RailgunHandler.IRailgunPr
                 serverPlayer.getAdvancements().award(advancement, "fired_coin");
             }
         }
-        return new CoinProjectileEntity(shooter.level(), shooter, target);
+        return new CoinProjectileEntity(shooter.level(), shooter, target, charged);
     }
 
     @Override
@@ -48,5 +62,15 @@ public final class CoinProjectileProperties implements RailgunHandler.IRailgunPr
     @Override
     public boolean isValidForTurret() {
         return false;
+    }
+
+    private static ItemStack findHeldRailgun(Player player) {
+        if (player.getMainHandItem().getItem() instanceof RailgunItem) {
+            return player.getMainHandItem();
+        }
+        if (player.getOffhandItem().getItem() instanceof RailgunItem) {
+            return player.getOffhandItem();
+        }
+        return player.getUseItem();
     }
 }

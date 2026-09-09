@@ -1,8 +1,9 @@
 {
   "replace": false,
   "values": [
+    "railguncoin:coin_impact",
     "railguncoin:charged_coin_impact",
-    "railguncoin:misfire",
+    "railguncoin:coin_explosion",
     "railguncoin:recoil"
   ]
 }

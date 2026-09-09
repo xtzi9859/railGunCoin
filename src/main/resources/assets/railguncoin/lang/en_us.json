@@ -1,10 +1,14 @@
 {
   "item.railguncoin.silver_coin": "Coin",
+  "item.railguncoin.charged_coin": "Charged Coin",
   "advancements.railguncoin.a_certain_scientific.title": "A Certain Scientific...",
   "advancements.railguncoin.a_certain_scientific.description": "Fire a coin from a railgun",
   "death.attack.railguncoin.coin_impact": "%1$s was pierced by an coin",
   "death.attack.railguncoin.coin_impact.player": "%1$s was pierced by %2$s's coin",
+  "death.attack.railguncoin.coin_explosion": "%1$s was caught in a coin blast",
+  "death.attack.railguncoin.coin_explosion.player": "%1$s was caught in %2$s's coin blast",
   "death.attack.railguncoin.misfire": "%1$s's railgun misfired",
   "death.attack.railguncoin.misfire.named": "%1$s's %2$s misfired",
+  "death.attack.railguncoin.recoil": "%1$s's bones were shattered by the recoil of %2$s",
   "subtitles.railguncoin.lock_on": "Target locked"
 }

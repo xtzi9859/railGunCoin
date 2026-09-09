@@ -1,0 +1,15 @@
+{
+  "type": "createaddition:charging",
+  "energy": 240000,
+  "ingredients": [
+    {
+      "item": "railguncoin:silver_coin"
+    }
+  ],
+  "max_charge_rate": 600,
+  "results": [
+    {
+      "id": "railguncoin:charged_coin"
+    }
+  ]
+}

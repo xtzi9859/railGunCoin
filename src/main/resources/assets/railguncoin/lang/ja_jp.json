@@ -1,10 +1,14 @@
 {
   "item.railguncoin.silver_coin": "コイン",
+  "item.railguncoin.charged_coin": "帯電コイン",
   "advancements.railguncoin.a_certain_scientific.title": "とある科学の…",
   "advancements.railguncoin.a_certain_scientific.description": "コインをレールガンで発射する",
   "death.attack.railguncoin.coin_impact": "%1$sはコインに撃ち抜かれた",
   "death.attack.railguncoin.coin_impact.player": "%1$sは%2$sのコインに撃ち抜かれた",
+  "death.attack.railguncoin.coin_explosion": "%1$sはコインの爆発に巻き込まれた",
+  "death.attack.railguncoin.coin_explosion.player": "%1$sは%2$sのコインの爆発に巻き込まれた",
   "death.attack.railguncoin.misfire": "%1$sのレールガンが暴発した",
   "death.attack.railguncoin.misfire.named": "%1$sの%2$sが暴発した",
+  "death.attack.railguncoin.recoil": "%2$sの反動で%1$sの骨が砕けた",
   "subtitles.railguncoin.lock_on": "照準が対象を捕捉する"
 }

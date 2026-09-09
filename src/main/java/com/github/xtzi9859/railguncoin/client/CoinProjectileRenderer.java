@@ -31,19 +31,18 @@ public final class CoinProjectileRenderer extends EntityRenderer<CoinProjectileE
             @Nonnull PoseStack poseStack, @Nonnull MultiBufferSource buffers, int packedLight
     ) {
         poseStack.pushPose();
-        Vec3 movement = entity.getDeltaMovement();
+        Vec3 movement = entity.getRenderDirection();
         if (movement.lengthSqr() > 0.0001D) {
             double horizontalSpeed = Math.sqrt(movement.x * movement.x + movement.z * movement.z);
             float movementYaw = (float)Math.toDegrees(Math.atan2(movement.x, movement.z));
             float movementPitch = (float)Math.toDegrees(Math.atan2(-movement.y, horizontalSpeed));
             poseStack.mulPose(Axis.YP.rotationDegrees(movementYaw));
-            poseStack.mulPose(Axis.XP.rotationDegrees(movementPitch + 90.0F));
-        } else {
-            poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(movementPitch));
         }
+        poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
         poseStack.scale(0.35F, 0.35F, 0.35F);
         itemRenderer.renderStatic(
-                ModItems.SILVER_COIN.get().getDefaultInstance(),
+                (entity.isCharged() ? ModItems.CHARGED_COIN : ModItems.SILVER_COIN).get().getDefaultInstance(),
                 ItemDisplayContext.NONE,
                 packedLight,
                 OverlayTexture.NO_OVERLAY,
