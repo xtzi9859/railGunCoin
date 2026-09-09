@@ -13,36 +13,36 @@ Immersive Engineering のレールガンに、炸裂・ロックオン機能を�
 [[mixins]]
 config="railguncoin.mixins.json"
 
-[[dependencies.${mod_id}]]
-modId="neoforge"
+[[dependencies."${mod_id}"]]
+modId="${neoforge_mod_id}"
 type="required"
 versionRange="[${neo_version},)"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.${mod_id}]]
-modId="minecraft"
+[[dependencies."${mod_id}"]]
+modId="${minecraft_mod_id}"
 type="required"
 versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.${mod_id}]]
-modId="immersiveengineering"
+[[dependencies."${mod_id}"]]
+modId="${immersive_engineering_mod_id}"
 type="required"
 versionRange="[12.4.2-194,12.4.3)"
 ordering="AFTER"
 side="BOTH"
 
-[[dependencies.${mod_id}]]
-modId="create"
+[[dependencies."${mod_id}"]]
+modId="${create_mod_id}"
 type="required"
 versionRange="[6.0.10,)"
 ordering="AFTER"
 side="BOTH"
 
-[[dependencies.${mod_id}]]
-modId="createaddition"
+[[dependencies."${mod_id}"]]
+modId="${create_addition_mod_id}"
 type="required"
 versionRange="[1.6.0,1.7.0)"
 ordering="AFTER"

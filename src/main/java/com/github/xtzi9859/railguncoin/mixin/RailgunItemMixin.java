@@ -9,11 +9,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(value = RailgunItem.class, remap = false)
 public abstract class RailgunItemMixin {
+    @Unique
     private static final int NORMAL_COIN_SHOT_ENERGY = 4000;
+    @Unique
     private static final int CHARGED_COIN_SHOT_ENERGY = 8000;
 
     @ModifyExpressionValue(
@@ -42,6 +45,7 @@ public abstract class RailgunItemMixin {
                 : original;
     }
 
+    @Unique
     private static Object railguncoin$getShotEnergy(Object original, ItemStack railgun, Player player) {
         ItemStack ammo = RailgunItem.findAmmo(railgun, player);
         if (ammo.is(ModItems.CHARGED_COIN.get())) {

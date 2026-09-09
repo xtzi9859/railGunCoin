@@ -161,6 +161,11 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_name               : mod_name,
             mod_license            : mod_license,
             mod_version            : mod_version,
+            neoforge_mod_id        : 'neoforge',
+            minecraft_mod_id       : 'minecraft',
+            immersive_engineering_mod_id: 'immersiveengineering',
+            create_mod_id          : 'create',
+            create_addition_mod_id : 'createaddition',
     ]
     inputs.properties replaceProperties
     expand replaceProperties

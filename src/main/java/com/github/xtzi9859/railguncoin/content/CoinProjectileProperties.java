@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings("resource")
 public final class CoinProjectileProperties implements RailgunHandler.IRailgunProjectile {
     public static final CoinProjectileProperties NORMAL = new CoinProjectileProperties(false);
     public static final CoinProjectileProperties CHARGED = new CoinProjectileProperties(true);

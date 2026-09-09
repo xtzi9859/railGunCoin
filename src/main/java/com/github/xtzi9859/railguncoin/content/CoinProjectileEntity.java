@@ -71,7 +71,7 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData(@Nonnull SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_RENDER_DIRECTION, new Vector3f(0.0F, 0.0F, 1.0F));
         builder.define(DATA_CHARGED, false);

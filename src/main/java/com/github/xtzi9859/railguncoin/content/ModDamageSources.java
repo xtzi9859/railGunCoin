@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public final class ModDamageSources {
@@ -70,8 +71,9 @@ public final class ModDamageSources {
             this.railgunName = railgunName;
         }
 
+        @Nonnull
         @Override
-        public Component getLocalizedDeathMessage(LivingEntity victim) {
+        public Component getLocalizedDeathMessage(@Nonnull LivingEntity victim) {
             if (railgunName != null) {
                 return Component.translatable(
                         "death.attack.railguncoin.misfire.named",
@@ -80,7 +82,7 @@ public final class ModDamageSources {
                 );
             }
 
-            return  Component.translatable(
+            return Component.translatable(
                     "death.attack.railguncoin.misfire",
                     victim.getDisplayName()
             );
@@ -95,8 +97,9 @@ public final class ModDamageSources {
             this.railgunName = railgunName;
         }
 
+        @Nonnull
         @Override
-        public Component getLocalizedDeathMessage(LivingEntity victim) {
+        public Component getLocalizedDeathMessage(@Nonnull LivingEntity victim) {
             return Component.translatable(
                     "death.attack.railguncoin.recoil",
                     victim.getDisplayName(),
