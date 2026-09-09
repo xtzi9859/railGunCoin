@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "railguncoin.refmap.json",
   "mixins": [
+    "CombatTrackerMixin",
     "RailgunItemMixin",
     "RailgunShotEntityMixin"
   ],

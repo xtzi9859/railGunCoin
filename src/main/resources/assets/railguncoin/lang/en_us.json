@@ -10,5 +10,6 @@
   "death.attack.railguncoin.misfire": "%1$s's railgun misfired",
   "death.attack.railguncoin.misfire.named": "%1$s's %2$s misfired",
   "death.attack.railguncoin.recoil": "%1$s's bones were shattered by the recoil of %2$s",
+  "death.attack.railguncoin.recoil_fall": "%1$s was doomed to fall by the recoil of %2$s",
   "subtitles.railguncoin.lock_on": "Target locked"
 }

@@ -10,5 +10,6 @@
   "death.attack.railguncoin.misfire": "%1$sのレールガンが暴発した",
   "death.attack.railguncoin.misfire.named": "%1$sの%2$sが暴発した",
   "death.attack.railguncoin.recoil": "%2$sの反動で%1$sの骨が砕けた",
+  "death.attack.railguncoin.recoil_fall": "%1$sは%2$sの反動で落下する運命だった",
   "subtitles.railguncoin.lock_on": "照準が対象を捕捉する"
 }

@@ -50,6 +50,13 @@ public final class ModDamageSources {
         return new RecoilDamageSource(holder(level, RECOIL), player, railgun.getHoverName().copy());
     }
 
+    @Nullable
+    public static Component getRecoilRailgunName(DamageSource source) {
+        return source instanceof RecoilDamageSource recoilSource
+                ? recoilSource.railgunName.copy()
+                : null;
+    }
+
     private static Holder.Reference<DamageType> holder(Level level, ResourceKey<DamageType> key) {
         return level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(key);
     }
@@ -107,4 +114,5 @@ public final class ModDamageSources {
             );
         }
     }
+
 }

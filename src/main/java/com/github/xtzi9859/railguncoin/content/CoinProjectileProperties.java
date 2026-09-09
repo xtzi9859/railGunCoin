@@ -11,6 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
@@ -19,6 +20,7 @@ public final class CoinProjectileProperties implements RailgunHandler.IRailgunPr
     public static final CoinProjectileProperties NORMAL = new CoinProjectileProperties(false);
     public static final CoinProjectileProperties CHARGED = new CoinProjectileProperties(true);
     private static final float CHARGED_COIN_RECOIL_DAMAGE = 17.0F;
+    private static final double CHARGED_COIN_KNOCKBACK_STRENGTH = 2.0D;
 
     private final boolean charged;
 
@@ -38,12 +40,21 @@ public final class CoinProjectileProperties implements RailgunHandler.IRailgunPr
         );
         if (shooter instanceof ServerPlayer serverPlayer) {
             if (charged) {
+                ItemStack railgun = findHeldRailgun(serverPlayer);
                 serverPlayer.hurt(
                         ModDamageSources.recoil(
-                                serverPlayer.level(), serverPlayer, findHeldRailgun(serverPlayer)
+                                serverPlayer.level(), serverPlayer, railgun
                         ),
                         CHARGED_COIN_RECOIL_DAMAGE
                 );
+                if (serverPlayer.isAlive()) {
+                    Vec3 shotDirection = Vec3.directionFromRotation(0.0F, serverPlayer.getYRot());
+                    serverPlayer.knockback(
+                            CHARGED_COIN_KNOCKBACK_STRENGTH,
+                            shotDirection.x,
+                            shotDirection.z
+                    );
+                }
             }
             AdvancementHolder advancement = serverPlayer.server.getAdvancements().get(
                     RailgunCoinMod.id("a_certain_scientific")
