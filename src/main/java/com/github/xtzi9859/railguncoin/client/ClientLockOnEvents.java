@@ -11,16 +11,18 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderLivingEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.joml.Matrix4f;
 
-@EventBusSubscriber(modid = RailgunCoinMod.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = RailgunCoinMod.MOD_ID, value = Dist.CLIENT)
 public final class ClientLockOnEvents {
     private static final ResourceLocation CURSOR = RailgunCoinMod.id("textures/gui/lock_on.png");
     private static final float CURSOR_SIZE_MULTIPLIER = 2.0F;
@@ -44,57 +46,71 @@ public final class ClientLockOnEvents {
     }
 
     @SubscribeEvent
-    public static void renderCursor(RenderLivingEvent.Post<LivingEntity, ?> event) {
-        if (event.getEntity().getId() != lockedEntityId) {
+    public static void renderCursor(RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
             return;
         }
-        PoseStack poseStack = event.getPoseStack();
-        LivingEntity target = event.getEntity();
         Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null
+                || !(minecraft.level.getEntity(lockedEntityId) instanceof LivingEntity target)) {
+            return;
+        }
+        Entity markerTarget = target instanceof EnderDragon dragon ? dragon.head : target;
+        float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
+        double targetWidth = markerTarget.getBbWidth();
+        double targetHeight = markerTarget.getBbHeight();
         Vec3 targetCenter = new Vec3(
-                Mth.lerp(event.getPartialTick(), target.xo, target.getX()),
-                Mth.lerp(event.getPartialTick(), target.yo, target.getY()) + target.getBbHeight() * 0.5D,
-                Mth.lerp(event.getPartialTick(), target.zo, target.getZ())
+                Mth.lerp(partialTick, markerTarget.xo, markerTarget.getX()),
+                Mth.lerp(partialTick, markerTarget.yo, markerTarget.getY()) + targetHeight * 0.5D,
+                Mth.lerp(partialTick, markerTarget.zo, markerTarget.getZ())
         );
-        Vec3 cameraOffset = minecraft.gameRenderer.getMainCamera().getPosition().subtract(targetCenter);
+        Vec3 cameraPosition = event.getCamera().getPosition();
+        Vec3 cameraOffset = cameraPosition.subtract(targetCenter);
         Vec3 towardCamera = cameraOffset.lengthSqr() < 1.0E-6D
                 ? new Vec3(0.0D, 0.0D, 1.0D)
                 : cameraOffset.normalize();
         double modelClearance = Math.max(
                 0.75D,
-                Math.max(target.getBbWidth(), target.getBbHeight()) * 0.15D
+                Math.max(targetWidth, targetHeight) * 0.15D
         );
-        double surfaceOffset = distanceToBoundingBoxSurface(target, towardCamera) + modelClearance;
+        double surfaceOffset = distanceToBoundingBoxSurface(targetWidth, targetHeight, towardCamera) + modelClearance;
         float targetSize = Mth.clamp(
-                Math.max(target.getBbWidth(), target.getBbHeight()) * 0.45F,
+                (float) Math.max(targetWidth, targetHeight) * 0.45F,
                 0.8F,
                 2.5F
         );
         double cursorDistance = Math.max(0.25D, cameraOffset.length() - surfaceOffset);
         float cursorSize = targetSize * CURSOR_SIZE_MULTIPLIER * (float) (cursorDistance / 12.0D);
+        Vec3 cursorPosition = targetCenter.add(towardCamera.scale(surfaceOffset));
 
+        PoseStack poseStack = event.getPoseStack();
         poseStack.pushPose();
         poseStack.translate(
-                towardCamera.x * surfaceOffset,
-                target.getBbHeight() * 0.5D + towardCamera.y * surfaceOffset,
-                towardCamera.z * surfaceOffset
+                cursorPosition.x - cameraPosition.x,
+                cursorPosition.y - cameraPosition.y,
+                cursorPosition.z - cameraPosition.z
         );
         poseStack.mulPose(minecraft.getEntityRenderDispatcher().cameraOrientation());
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         poseStack.scale(cursorSize, cursorSize, cursorSize);
 
-        VertexConsumer consumer = event.getMultiBufferSource().getBuffer(RenderType.entityTranslucentEmissive(CURSOR));
+        RenderType renderType = RenderType.entityTranslucentEmissive(CURSOR);
+        var bufferSource = minecraft.renderBuffers().bufferSource();
+        VertexConsumer consumer = bufferSource.getBuffer(renderType);
         Matrix4f matrix = poseStack.last().pose();
         vertex(consumer, poseStack, matrix, -0.5F, -0.5F, 0.0F, 1.0F);
         vertex(consumer, poseStack, matrix, 0.5F, -0.5F, 1.0F, 1.0F);
         vertex(consumer, poseStack, matrix, 0.5F, 0.5F, 1.0F, 0.0F);
         vertex(consumer, poseStack, matrix, -0.5F, 0.5F, 0.0F, 0.0F);
+        bufferSource.endBatch(renderType);
         poseStack.popPose();
     }
 
-    private static double distanceToBoundingBoxSurface(LivingEntity target, Vec3 direction) {
-        double halfWidth = target.getBbWidth() * 0.5D;
-        double halfHeight = target.getBbHeight() * 0.5D;
+    private static double distanceToBoundingBoxSurface(
+            double targetWidth, double targetHeight, Vec3 direction
+    ) {
+        double halfWidth = targetWidth * 0.5D;
+        double halfHeight = targetHeight * 0.5D;
         return Math.min(
                 axisDistance(halfWidth, direction.x),
                 Math.min(axisDistance(halfHeight, direction.y), axisDistance(halfWidth, direction.z))

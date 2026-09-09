@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
@@ -26,6 +27,7 @@ import java.util.UUID;
 public final class CoinProjectileEntity extends IEProjectileEntity {
     private static final double TRAIL_SPACING = 1.0D;
     private static final float FLIGHT_SPEED = 8.0F;
+    private static final float EXPLOSION_FIRE_SECONDS = 5.0F;
 
     @Nullable
     private UUID targetUuid;
@@ -68,7 +70,7 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
             return null;
         }
         Vec3 current = getDeltaMovement();
-        Vec3 aimPoint = getAimPoint(target);
+        Vec3 aimPoint = LockOnTargeting.getAimPoint(target);
         Vec3 toTarget = aimPoint.subtract(position());
         if (current.lengthSqr() < 0.0001D || toTarget.lengthSqr() < 0.0001D || !hasClearPath(aimPoint)) {
             return null;
@@ -76,12 +78,8 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
         double speed = current.length();
         double distance = toTarget.length();
         setDeltaMovement(toTarget.scale(Math.min(speed, distance) / distance));
-        return distance <= speed ? new EntityHitResult(target, aimPoint) : null;
-    }
-
-    private static Vec3 getAimPoint(LivingEntity target) {
-        double verticalInset = Math.min(0.5D, target.getBbHeight() * 0.15D);
-        return target.getEyePosition().add(0.0D, -verticalInset, 0.0D);
+        Entity hitEntity = target instanceof EnderDragon dragon ? dragon.head : target;
+        return distance <= speed ? new EntityHitResult(hitEntity, aimPoint) : null;
     }
 
     private boolean hasClearPath(Vec3 aimPoint) {
@@ -153,7 +151,11 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
         ExplosionDamageCalculator damageCalculator = new ExplosionDamageCalculator() {
             @Override
             public boolean shouldDamageEntity(Explosion explosion, Entity entity) {
-                return entity != shooter;
+                if (entity == shooter) {
+                    return false;
+                }
+                entity.igniteForSeconds(EXPLOSION_FIRE_SECONDS);
+                return true;
             }
         };
         level().explode(

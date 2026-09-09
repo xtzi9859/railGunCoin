@@ -14,7 +14,7 @@ public final class SonicRingParticle extends HugeExplosionParticle {
     ) {
         super(level, x, y, z, 1.0D, sprites);
         this.lifetime = 16;
-        this.quadSize = 1.5F;
+        this.quadSize = 2.25F;
         this.rCol = 1.0F;
         this.gCol = 1.0F;
         this.bCol = 1.0F;

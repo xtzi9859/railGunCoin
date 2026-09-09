@@ -3,9 +3,13 @@ package com.github.xtzi9859.railguncoin.content;
 import blusunrize.immersiveengineering.common.items.RailgunItem;
 import com.github.xtzi9859.railguncoin.registry.ModItems;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -50,17 +54,32 @@ public final class LockOnTargeting {
                         player.getBoundingBox().inflate(RANGE),
                         mob -> mob instanceof Enemy && isValid(player, mob, eyes, view)
                 ).stream()
-                .min(Comparator.comparingDouble(player::distanceToSqr))
+                .min(Comparator
+                        .comparingInt((LivingEntity mob) -> mob instanceof EnderDragon ? 0 : 1)
+                        .thenComparingDouble(mob -> getAimPoint(mob).distanceToSqr(eyes)))
                 .orElse(null);
     }
 
     private static boolean isValid(Player player, LivingEntity mob, Vec3 eyes, Vec3 view) {
-        if (!mob.isAlive() || player.distanceToSqr(mob) > RANGE * RANGE) {
+        if (!mob.isAlive()) {
             return false;
         }
-        Vec3 target = mob.getEyePosition().subtract(eyes);
-        return target.lengthSqr() > 0.0001D
-                && view.dot(target.normalize()) >= MIN_VIEW_DOT
-                && player.hasLineOfSight(mob);
+        Vec3 target = getAimPoint(mob).subtract(eyes);
+        if (target.lengthSqr() < 0.0001D || target.lengthSqr() > RANGE * RANGE
+                || view.dot(target.normalize()) < MIN_VIEW_DOT) {
+            return false;
+        }
+        BlockHitResult obstruction = player.level().clip(new ClipContext(
+                eyes, eyes.add(target), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player
+        ));
+        return obstruction.getType() == HitResult.Type.MISS;
+    }
+
+    public static Vec3 getAimPoint(LivingEntity target) {
+        if (target instanceof EnderDragon dragon) {
+            return dragon.head.getBoundingBox().getCenter();
+        }
+        double verticalInset = Math.min(0.5D, target.getBbHeight() * 0.15D);
+        return target.getEyePosition().add(0.0D, -verticalInset, 0.0D);
     }
 }
