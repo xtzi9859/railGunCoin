@@ -24,6 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
+@SuppressWarnings("resource")
 public final class CoinProjectileEntity extends IEProjectileEntity {
     private static final double TRAIL_SPACING = 1.0D;
     private static final float FLIGHT_SPEED = 8.0F;
@@ -121,7 +122,7 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
     }
 
     @Override
-    protected void onHitEntity(EntityHitResult result) {
+    protected void onHitEntity(@Nonnull EntityHitResult result) {
         if (!level().isClientSide) {
             result.getEntity().hurt(ModDamageSources.coinImpact(level(), this, getOwner()), 20.0F);
             explode(result.getLocation());
@@ -130,7 +131,7 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
     }
 
     @Override
-    protected void onHitBlock(BlockHitResult result) {
+    protected void onHitBlock(@Nonnull BlockHitResult result) {
         if (!level().isClientSide) {
             explode(result.getLocation());
         }
@@ -150,7 +151,7 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
         Entity shooter = getOwner();
         ExplosionDamageCalculator damageCalculator = new ExplosionDamageCalculator() {
             @Override
-            public boolean shouldDamageEntity(Explosion explosion, Entity entity) {
+            public boolean shouldDamageEntity(@Nonnull Explosion explosion, @Nonnull Entity entity) {
                 if (entity == shooter) {
                     return false;
                 }

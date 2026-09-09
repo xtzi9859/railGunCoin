@@ -15,6 +15,7 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.Comparator;
 
+@SuppressWarnings("resource")
 public final class LockOnTargeting {
     public static final double RANGE = 32.0D;
     private static final double MIN_VIEW_DOT = 0.5D;

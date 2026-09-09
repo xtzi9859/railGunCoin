@@ -7,6 +7,8 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 
+import javax.annotation.Nonnull;
+
 public final class SonicRingParticle extends HugeExplosionParticle {
     private SonicRingParticle(
             ClientLevel level, double x, double y, double z,
@@ -30,7 +32,7 @@ public final class SonicRingParticle extends HugeExplosionParticle {
 
         @Override
         public Particle createParticle(
-                SimpleParticleType type, ClientLevel level,
+                @Nonnull SimpleParticleType type, @Nonnull ClientLevel level,
                 double x, double y, double z, double xd, double yd, double zd
         ) {
             return new SonicRingParticle(level, x, y, z, sprites);

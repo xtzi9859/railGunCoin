@@ -14,6 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nonnull;
+
 public final class CoinProjectileRenderer extends EntityRenderer<CoinProjectileEntity> {
     private static final ResourceLocation TEXTURE = RailgunCoinMod.id("textures/item/silver_coin.png");
     private final ItemRenderer itemRenderer;
@@ -25,8 +27,8 @@ public final class CoinProjectileRenderer extends EntityRenderer<CoinProjectileE
 
     @Override
     public void render(
-            CoinProjectileEntity entity, float yaw, float partialTick,
-            PoseStack poseStack, MultiBufferSource buffers, int packedLight
+            @Nonnull CoinProjectileEntity entity, float yaw, float partialTick,
+            @Nonnull PoseStack poseStack, @Nonnull MultiBufferSource buffers, int packedLight
     ) {
         poseStack.pushPose();
         Vec3 movement = entity.getDeltaMovement();
@@ -54,8 +56,9 @@ public final class CoinProjectileRenderer extends EntityRenderer<CoinProjectileE
         super.render(entity, yaw, partialTick, poseStack, buffers, packedLight);
     }
 
+    @Nonnull
     @Override
-    public ResourceLocation getTextureLocation(CoinProjectileEntity entity) {
+    public ResourceLocation getTextureLocation(@Nonnull CoinProjectileEntity entity) {
         return TEXTURE;
     }
 }
