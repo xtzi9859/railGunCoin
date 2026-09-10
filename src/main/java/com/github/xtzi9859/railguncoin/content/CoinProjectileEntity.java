@@ -6,6 +6,7 @@ import com.github.xtzi9859.railguncoin.registry.ModParticles;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -271,6 +272,18 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
     private static void summonBlockHitLightning(
             ServerLevel level, Vec3 position, @Nullable Entity shooter
     ) {
+        summonAreaLightning(level, position, shooter, CHARGED_BLOCK_HIT_LIGHTNING_COUNT);
+    }
+
+    public static void summonSelfDestructLightning(
+            ServerLevel level, Vec3 position, @Nullable Entity shooter
+    ) {
+        summonAreaLightning(level, position, shooter, CHARGED_EXPLOSION_LIGHTNING_COUNT);
+    }
+
+    private static void summonAreaLightning(
+            ServerLevel level, Vec3 position, @Nullable Entity excludedEntity, int strikeCount
+    ) {
         AABB strikeArea = new AABB(
                 position.x - LIGHTNING_DAMAGE_RADIUS,
                 position.y - LIGHTNING_DAMAGE_RADIUS,
@@ -279,7 +292,7 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
                 position.y + LIGHTNING_DAMAGE_RADIUS * 3.0D,
                 position.z + LIGHTNING_DAMAGE_RADIUS
         );
-        for (int strike = 0; strike < CHARGED_BLOCK_HIT_LIGHTNING_COUNT; strike++) {
+        for (int strike = 0; strike < strikeCount; strike++) {
             LightningBolt lightning = createLightning(level, position);
             if (lightning == null) {
                 continue;
@@ -287,7 +300,7 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
             for (LivingEntity target : level.getEntitiesOfClass(
                     LivingEntity.class,
                     strikeArea,
-                    entity -> entity != shooter && entity.isAlive()
+                    entity -> entity != excludedEntity && entity.isAlive()
             )) {
                 strikeWithLightning(level, lightning, target);
             }
@@ -314,7 +327,14 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
 
     private static void addVisualLightning(ServerLevel level, LightningBolt lightning) {
         lightning.setVisualOnly(true);
-        level.addFreshEntity(lightning);
+        ClientboundAddEntityPacket packet = new ClientboundAddEntityPacket(
+                lightning,
+                0,
+                lightning.blockPosition()
+        );
+        for (ServerPlayer player : level.players()) {
+            player.connection.send(packet);
+        }
     }
 
     @Override

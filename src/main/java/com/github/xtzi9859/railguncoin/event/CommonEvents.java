@@ -2,10 +2,12 @@ package com.github.xtzi9859.railguncoin.event;
 
 import blusunrize.immersiveengineering.common.items.RailgunItem;
 import com.github.xtzi9859.railguncoin.RailgunCoinMod;
+import com.github.xtzi9859.railguncoin.content.CoinProjectileEntity;
 import com.github.xtzi9859.railguncoin.content.LockOnTargeting;
 import com.github.xtzi9859.railguncoin.content.ModDamageSources;
 import com.github.xtzi9859.railguncoin.registry.ModParticles;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -69,7 +71,12 @@ public final class CommonEvents {
             player.setHealth(0.0F);
             player.die(source);
         }
-        player.level().explode(
+        ServerLevel level = player.serverLevel();
+        sendExplosionEmitter(level, player);
+        if (charged) {
+            CoinProjectileEntity.summonSelfDestructLightning(level, player.position(), player);
+        }
+        level.explode(
                 player,
                 null,
                 null,
@@ -78,8 +85,22 @@ public final class CommonEvents {
                 false,
                 Level.ExplosionInteraction.NONE,
                 ModParticles.NO_EXPLOSION.get(),
-                ParticleTypes.EXPLOSION_EMITTER,
+                ModParticles.NO_EXPLOSION.get(),
                 SoundEvents.GENERIC_EXPLODE
         );
+    }
+
+    private static void sendExplosionEmitter(ServerLevel level, ServerPlayer sourcePlayer) {
+        for (ServerPlayer player : level.players()) {
+            level.sendParticles(
+                    player,
+                    ParticleTypes.EXPLOSION_EMITTER,
+                    true,
+                    sourcePlayer.getX(), sourcePlayer.getY(), sourcePlayer.getZ(),
+                    1,
+                    0.0D, 0.0D, 0.0D,
+                    0.0D
+            );
+        }
     }
 }
