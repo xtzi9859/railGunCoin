@@ -59,6 +59,9 @@ public final class LockOnTargeting {
 
     @Nullable
     public static LivingEntity findVisibleTarget(Player player) {
+        if (player.isShiftKeyDown()) {
+            return null;
+        }
         Vec3 eyes = player.getEyePosition();
         Vec3 view = player.getViewVector(1.0F).normalize();
         return player.level().getEntitiesOfClass(

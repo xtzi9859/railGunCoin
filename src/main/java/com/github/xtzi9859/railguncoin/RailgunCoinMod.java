@@ -2,6 +2,7 @@ package com.github.xtzi9859.railguncoin;
 
 import blusunrize.immersiveengineering.api.tool.RailgunHandler;
 import com.github.xtzi9859.railguncoin.content.CoinProjectileProperties;
+import com.github.xtzi9859.railguncoin.network.ModNetwork;
 import com.github.xtzi9859.railguncoin.registry.ModEntityTypes;
 import com.github.xtzi9859.railguncoin.registry.ModItems;
 import com.github.xtzi9859.railguncoin.registry.ModParticles;
@@ -20,6 +21,7 @@ public final class RailgunCoinMod {
         ModEntityTypes.REGISTER.register(modBus);
         ModParticles.REGISTER.register(modBus);
         ModSounds.REGISTER.register(modBus);
+        modBus.addListener(ModNetwork::registerPayloads);
         modBus.addListener(this::commonSetup);
         modBus.addListener(ModItems::addToCreativeTab);
     }
