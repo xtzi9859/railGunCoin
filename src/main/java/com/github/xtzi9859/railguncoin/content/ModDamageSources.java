@@ -30,11 +30,11 @@ public final class ModDamageSources {
             Level level, Entity projectile, @Nullable Entity owner, boolean charged
     ) {
         ResourceKey<DamageType> type = charged ? CHARGED_COIN_IMPACT : COIN_IMPACT;
-        return new DamageSource(holder(level, type), null, owner, projectile.position());
+        return new CoinDamageSource(holder(level, type), owner, projectile.position());
     }
 
     public static DamageSource coinExplosion(Level level, @Nullable Entity owner, Vec3 position) {
-        return new DamageSource(holder(level, COIN_EXPLOSION), null, owner, position);
+        return new CoinDamageSource(holder(level, COIN_EXPLOSION), owner, position);
     }
 
     public static DamageSource misfire(Level level, Entity player, ItemStack railgun) {
@@ -63,6 +63,44 @@ public final class ModDamageSources {
 
     private static ResourceKey<DamageType> key(String path) {
         return ResourceKey.create(Registries.DAMAGE_TYPE, RailgunCoinMod.id(path));
+    }
+
+    private static final class CoinDamageSource extends DamageSource {
+        private CoinDamageSource(
+                Holder<DamageType> type,
+                @Nullable Entity owner,
+                Vec3 position
+        ) {
+            super(type, null, owner, position);
+        }
+
+        @Nonnull
+        @Override
+        public Component getLocalizedDeathMessage(@Nonnull LivingEntity victim) {
+            String translationKey = "death.attack." + getMsgId();
+            Entity attacker = getEntity();
+            if (attacker == null) {
+                return Component.translatable(translationKey, victim.getDisplayName());
+            }
+
+            ItemStack weapon = attacker instanceof LivingEntity living
+                    ? living.getMainHandItem()
+                    : ItemStack.EMPTY;
+            if (!weapon.isEmpty() && weapon.has(DataComponents.CUSTOM_NAME)) {
+                return Component.translatable(
+                        translationKey + ".item",
+                        victim.getDisplayName(),
+                        attacker.getDisplayName(),
+                        weapon.getDisplayName()
+                );
+            }
+
+            return Component.translatable(
+                    translationKey + ".player",
+                    victim.getDisplayName(),
+                    attacker.getDisplayName()
+            );
+        }
     }
 
     private static final class MisfireDamageSource extends DamageSource {
@@ -114,5 +152,4 @@ public final class ModDamageSources {
             );
         }
     }
-
 }

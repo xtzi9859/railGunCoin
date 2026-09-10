@@ -6,7 +6,7 @@
       "item": "railguncoin:silver_coin"
     }
   ],
-  "max_charge_rate": 600,
+  "max_charge_rate": 1200,
   "results": [
     {
       "id": "railguncoin:charged_coin"

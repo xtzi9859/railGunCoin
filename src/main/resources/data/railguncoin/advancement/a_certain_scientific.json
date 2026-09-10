@@ -1,4 +1,5 @@
 {
+  "parent": "railguncoin:root",
   "display": {
     "icon": {
       "id": "railguncoin:silver_coin"
@@ -9,7 +10,6 @@
     "description": {
       "translate": "advancements.railguncoin.a_certain_scientific.description"
     },
-    "background": "minecraft:textures/block/stone_bricks.png",
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true,

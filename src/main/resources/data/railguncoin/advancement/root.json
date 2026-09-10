@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "id": "railguncoin:silver_coin"
+    },
+    "title": {
+      "translate": "advancements.railguncoin.root.title"
+    },
+    "description": {
+      "translate": "advancements.railguncoin.root.description"
+    },
+    "background": "minecraft:textures/block/stone_bricks.png",
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "requirements": [
+    [
+      "tick"
+    ]
+  ]
+}
