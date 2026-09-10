@@ -4,6 +4,8 @@ import blusunrize.immersiveengineering.common.items.RailgunItem;
 import com.github.xtzi9859.railguncoin.RailgunCoinMod;
 import com.github.xtzi9859.railguncoin.content.LockOnTargeting;
 import com.github.xtzi9859.railguncoin.content.ModDamageSources;
+import com.github.xtzi9859.railguncoin.registry.ModParticles;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -67,8 +69,17 @@ public final class CommonEvents {
             player.setHealth(0.0F);
             player.die(source);
         }
-        player.level().explode(player, player.getX(), player.getY(), player.getZ(),
+        player.level().explode(
+                player,
+                null,
+                null,
+                player.getX(), player.getY(), player.getZ(),
                 charged ? CHARGED_EXPLOSION_POWER : NORMAL_EXPLOSION_POWER,
-                false, Level.ExplosionInteraction.NONE);
+                false,
+                Level.ExplosionInteraction.NONE,
+                ModParticles.NO_EXPLOSION.get(),
+                ParticleTypes.EXPLOSION_EMITTER,
+                SoundEvents.GENERIC_EXPLODE
+        );
     }
 }

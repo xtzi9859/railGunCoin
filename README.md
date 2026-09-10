@@ -7,7 +7,7 @@ Minecraft 1.21.1 / NeoForge 21.1.249 / Immersive Engineering 12.4.2 向けのア
 - NeoForge 21.1.249
 - Immersive Engineering 12.4.2-194
 - Create 6.0.10 以降（コインのプレス加工レシピに使用）
-- Create Crafts & Additions 1.6.0（帯電コインの充電レシピに使用）
+- Create Crafts & Additions 1.7.0（帯電コインの充電レシピに使用）
 
 ## 導入
 

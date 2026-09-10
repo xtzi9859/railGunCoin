@@ -72,6 +72,7 @@ neoForge {
 
         server {
             server()
+            gameDirectory = project.file('run-server')
             programArgument '--nogui'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
@@ -130,7 +131,7 @@ configurations {
 dependencies {
     implementation "maven.modrinth:tIm2nV03:uNRARSH2"
     localRuntime "maven.modrinth:create:UjX6dr61"
-    localRuntime "maven.modrinth:kU1G12Nn:qPr8V4G2"
+    localRuntime "maven.modrinth:kU1G12Nn:zlC557Yg"
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"

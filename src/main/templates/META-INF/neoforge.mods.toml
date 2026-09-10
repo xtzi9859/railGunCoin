@@ -44,6 +44,6 @@ side="BOTH"
 [[dependencies."${mod_id}"]]
 modId="${create_addition_mod_id}"
 type="required"
-versionRange="[1.6.0,1.7.0)"
+versionRange="[1.7.0,1.8.0)"
 ordering="AFTER"
 side="BOTH"
