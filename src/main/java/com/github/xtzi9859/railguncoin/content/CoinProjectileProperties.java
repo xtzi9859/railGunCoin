@@ -20,7 +20,7 @@ public final class CoinProjectileProperties implements RailgunHandler.IRailgunPr
     public static final CoinProjectileProperties NORMAL = new CoinProjectileProperties(false);
     public static final CoinProjectileProperties CHARGED = new CoinProjectileProperties(true);
     private static final float CHARGED_COIN_RECOIL_DAMAGE = 17.0F;
-    private static final double CHARGED_COIN_KNOCKBACK_STRENGTH = 2.0D;
+    private static final double CHARGED_COIN_KNOCKBACK_STRENGTH = 1.0D;
 
     private final boolean charged;
 

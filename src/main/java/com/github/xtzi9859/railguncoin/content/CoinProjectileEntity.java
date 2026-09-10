@@ -24,6 +24,7 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -49,6 +50,9 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
     private static final float NORMAL_EXPLOSION_POWER = 4.0F;
     private static final float CHARGED_EXPLOSION_POWER = 7.0F;
     private static final float CHARGED_LIGHTNING_DAMAGE = 5.0F;
+    private static final int CHARGED_EXPLOSION_LIGHTNING_COUNT = 3;
+    private static final int CHARGED_BLOCK_HIT_LIGHTNING_COUNT = 10;
+    private static final double LIGHTNING_DAMAGE_RADIUS = 3.0D;
     private static final float EXPLOSION_FIRE_SECONDS = 5.0F;
 
     @Nullable
@@ -202,8 +206,11 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
 
     @Override
     protected void onHitBlock(@Nonnull BlockHitResult result) {
-        if (!level().isClientSide) {
+        if (level() instanceof ServerLevel serverLevel) {
             explode(result.getLocation());
+            if (isCharged()) {
+                summonBlockHitLightning(serverLevel, result.getLocation(), getOwner());
+            }
         }
         discard();
     }
@@ -231,7 +238,9 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
                     entity.igniteForSeconds(EXPLOSION_FIRE_SECONDS);
                 }
                 if (isCharged() && entity instanceof LivingEntity) {
-                    summonDamagingLightning(serverLevel, (LivingEntity)entity);
+                    for (int strike = 0; strike < CHARGED_EXPLOSION_LIGHTNING_COUNT; strike++) {
+                        summonDamagingLightning(serverLevel, (LivingEntity)entity);
+                    }
                 }
                 return true;
             }
@@ -251,14 +260,59 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
     }
 
     private static void summonDamagingLightning(ServerLevel level, LivingEntity target) {
-        LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(level);
+        LightningBolt lightning = createLightning(level, target.position());
         if (lightning == null) {
             return;
         }
-        lightning.moveTo(target.getX(), target.getY(), target.getZ());
-        lightning.setDamage(CHARGED_LIGHTNING_DAMAGE);
+        strikeWithLightning(level, lightning, target);
+        addVisualLightning(level, lightning);
+    }
+
+    private static void summonBlockHitLightning(
+            ServerLevel level, Vec3 position, @Nullable Entity shooter
+    ) {
+        AABB strikeArea = new AABB(
+                position.x - LIGHTNING_DAMAGE_RADIUS,
+                position.y - LIGHTNING_DAMAGE_RADIUS,
+                position.z - LIGHTNING_DAMAGE_RADIUS,
+                position.x + LIGHTNING_DAMAGE_RADIUS,
+                position.y + LIGHTNING_DAMAGE_RADIUS * 3.0D,
+                position.z + LIGHTNING_DAMAGE_RADIUS
+        );
+        for (int strike = 0; strike < CHARGED_BLOCK_HIT_LIGHTNING_COUNT; strike++) {
+            LightningBolt lightning = createLightning(level, position);
+            if (lightning == null) {
+                continue;
+            }
+            for (LivingEntity target : level.getEntitiesOfClass(
+                    LivingEntity.class,
+                    strikeArea,
+                    entity -> entity != shooter && entity.isAlive()
+            )) {
+                strikeWithLightning(level, lightning, target);
+            }
+            addVisualLightning(level, lightning);
+        }
+    }
+
+    @Nullable
+    private static LightningBolt createLightning(ServerLevel level, Vec3 position) {
+        LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(level);
+        if (lightning != null) {
+            lightning.moveTo(position.x, position.y, position.z);
+            lightning.setDamage(CHARGED_LIGHTNING_DAMAGE);
+        }
+        return lightning;
+    }
+
+    private static void strikeWithLightning(
+            ServerLevel level, LightningBolt lightning, LivingEntity target
+    ) {
         target.invulnerableTime = 0;
         target.thunderHit(level, lightning);
+    }
+
+    private static void addVisualLightning(ServerLevel level, LightningBolt lightning) {
         lightning.setVisualOnly(true);
         level.addFreshEntity(lightning);
     }

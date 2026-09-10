@@ -42,6 +42,10 @@ base {
     archivesName = mod_artifact_name
 }
 
+tasks.withType(Jar).configureEach {
+    archiveVersion.set('')
+}
+
 // Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
@@ -126,6 +130,7 @@ configurations {
 dependencies {
     implementation "maven.modrinth:tIm2nV03:uNRARSH2"
     localRuntime "maven.modrinth:create:UjX6dr61"
+    localRuntime "maven.modrinth:kU1G12Nn:qPr8V4G2"
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
