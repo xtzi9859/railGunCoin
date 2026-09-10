@@ -6,6 +6,7 @@
   "refmap": "railguncoin.refmap.json",
   "mixins": [
     "CombatTrackerMixin",
+    "GameTestHooksMixin",
     "RailgunItemMixin",
     "RailgunShotEntityMixin"
   ],

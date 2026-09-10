@@ -18,6 +18,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -53,6 +54,7 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
     private static final float CHARGED_EXPLOSION_POWER = 7.0F;
     private static final float CHARGED_LIGHTNING_DAMAGE = 5.0F;
     private static final int CHARGED_EXPLOSION_LIGHTNING_COUNT = 3;
+    private static final int CHARGED_DIRECT_HIT_LIGHTNING_COUNT = 10;
     private static final int CHARGED_BLOCK_HIT_LIGHTNING_COUNT = 10;
     private static final double LIGHTNING_DAMAGE_RADIUS = 3.0D;
     private static final float EXPLOSION_FIRE_SECONDS = 5.0F;
@@ -201,7 +203,17 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
                     ModDamageSources.coinImpact(level(), this, getOwner(), isCharged()),
                     damage
             );
-            explode(result.getLocation());
+            LivingEntity directHitTarget = isCharged()
+                    ? getLivingHitTarget(result.getEntity())
+                    : null;
+            if (directHitTarget != null && level() instanceof ServerLevel serverLevel) {
+                summonDamagingLightning(
+                        serverLevel,
+                        directHitTarget,
+                        CHARGED_DIRECT_HIT_LIGHTNING_COUNT
+                );
+            }
+            explode(result.getLocation(), directHitTarget);
         }
         discard();
     }
@@ -209,7 +221,7 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
     @Override
     protected void onHitBlock(@Nonnull BlockHitResult result) {
         if (level() instanceof ServerLevel serverLevel) {
-            explode(result.getLocation());
+            explode(result.getLocation(), null);
             if (isCharged()) {
                 summonBlockHitLightning(serverLevel, result.getLocation(), getOwner());
             }
@@ -217,7 +229,7 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
         discard();
     }
 
-    private void explode(Vec3 position) {
+    private void explode(Vec3 position, @Nullable LivingEntity directHitTarget) {
         if (!(level() instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -239,10 +251,12 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
                 if (!(entity instanceof ItemEntity) && !(entity instanceof ExperienceOrb)) {
                     entity.igniteForSeconds(EXPLOSION_FIRE_SECONDS);
                 }
-                if (isCharged() && entity instanceof LivingEntity) {
+                if (isCharged()
+                        && entity instanceof LivingEntity livingEntity
+                        && entity != directHitTarget) {
                     summonDamagingLightning(
                             serverLevel,
-                            (LivingEntity)entity,
+                            livingEntity,
                             CHARGED_EXPLOSION_LIGHTNING_COUNT
                     );
                 }
@@ -261,6 +275,17 @@ public final class CoinProjectileEntity extends IEProjectileEntity {
                 ModParticles.NO_EXPLOSION.get(),
                 SoundEvents.GENERIC_EXPLODE
         );
+    }
+
+    @Nullable
+    private static LivingEntity getLivingHitTarget(Entity hitEntity) {
+        if (hitEntity instanceof LivingEntity livingEntity) {
+            return livingEntity;
+        }
+        if (hitEntity instanceof EnderDragonPart dragonPart) {
+            return dragonPart.parentMob;
+        }
+        return null;
     }
 
     private static void summonDamagingLightning(

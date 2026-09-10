@@ -7,6 +7,7 @@ import com.github.xtzi9859.railguncoin.RailgunCoinMod;
 import com.github.xtzi9859.railguncoin.content.LockOnTargeting;
 import com.github.xtzi9859.railguncoin.registry.ModSounds;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
@@ -26,7 +27,12 @@ import org.joml.Matrix4f;
 public final class ClientLockOnEvents {
     private static final ResourceLocation CURSOR = RailgunCoinMod.id("textures/gui/lock_on.png");
     private static final float CURSOR_SIZE_MULTIPLIER = 2.0F;
+    private static final int FADE_DURATION_TICKS = 5;
     private static int lockedEntityId = -1;
+    private static int renderedEntityId = -1;
+    private static int transitionTicks;
+    private static CursorTransition transition = CursorTransition.HIDDEN;
+    private static ClientLevel trackedLevel;
 
     private ClientLockOnEvents() {
     }
@@ -37,10 +43,26 @@ public final class ClientLockOnEvents {
         if (minecraft.player == null || event.getEntity() != minecraft.player) {
             return;
         }
+        if (minecraft.level != trackedLevel) {
+            trackedLevel = minecraft.level;
+            resetCursor();
+        }
+
+        advanceTransition();
         LivingEntity target = LockOnTargeting.findTarget(minecraft.player);
         int nextId = target == null ? -1 : target.getId();
-        if (nextId != -1 && nextId != lockedEntityId) {
+
+        if (lockedEntityId == -1 && nextId != -1) {
             minecraft.player.playSound(ModSounds.LOCK_ON.value(), 0.8F, 1.0F);
+            renderedEntityId = nextId;
+            transitionTicks = 0;
+            transition = CursorTransition.FADING_IN;
+        } else if (lockedEntityId != -1 && nextId == -1) {
+            renderedEntityId = lockedEntityId;
+            transitionTicks = 0;
+            transition = CursorTransition.FADING_OUT;
+        } else if (lockedEntityId != -1 && nextId != lockedEntityId) {
+            renderedEntityId = nextId;
         }
         lockedEntityId = nextId;
     }
@@ -52,11 +74,28 @@ public final class ClientLockOnEvents {
         }
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null
-                || !(minecraft.level.getEntity(lockedEntityId) instanceof LivingEntity target)) {
+                || !(minecraft.level.getEntity(renderedEntityId) instanceof LivingEntity target)) {
             return;
         }
         Entity markerTarget = target instanceof EnderDragon dragon ? dragon.head : target;
         float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
+        float transitionProgress = smoothStep(Mth.clamp(
+                (transitionTicks + partialTick) / FADE_DURATION_TICKS,
+                0.0F,
+                1.0F
+        ));
+        float sizeMultiplier = switch (transition) {
+            case FADING_IN -> Mth.lerp(transitionProgress, 2.0F, 1.0F);
+            case FADING_OUT -> Mth.lerp(transitionProgress, 1.0F, 2.0F);
+            default -> 1.0F;
+        };
+        float opacity = switch (transition) {
+            case FADING_IN -> transitionProgress;
+            case FADING_OUT -> 1.0F - transitionProgress;
+            case VISIBLE -> 1.0F;
+            case HIDDEN -> 0.0F;
+        };
+        int alpha = Mth.clamp(Math.round(235.0F * opacity), 0, 235);
         double targetWidth = markerTarget.getBbWidth();
         double targetHeight = markerTarget.getBbHeight();
         Vec3 targetCenter = new Vec3(
@@ -80,7 +119,10 @@ public final class ClientLockOnEvents {
                 2.5F
         );
         double cursorDistance = Math.max(0.25D, cameraOffset.length() - surfaceOffset);
-        float cursorSize = targetSize * CURSOR_SIZE_MULTIPLIER * (float) (cursorDistance / 12.0D);
+        float cursorSize = targetSize
+                * CURSOR_SIZE_MULTIPLIER
+                * sizeMultiplier
+                * (float) (cursorDistance / 12.0D);
         Vec3 cursorPosition = targetCenter.add(towardCamera.scale(surfaceOffset));
 
         PoseStack poseStack = event.getPoseStack();
@@ -98,10 +140,10 @@ public final class ClientLockOnEvents {
         var bufferSource = minecraft.renderBuffers().bufferSource();
         VertexConsumer consumer = bufferSource.getBuffer(renderType);
         Matrix4f matrix = poseStack.last().pose();
-        vertex(consumer, poseStack, matrix, -0.5F, -0.5F, 0.0F, 1.0F);
-        vertex(consumer, poseStack, matrix, 0.5F, -0.5F, 1.0F, 1.0F);
-        vertex(consumer, poseStack, matrix, 0.5F, 0.5F, 1.0F, 0.0F);
-        vertex(consumer, poseStack, matrix, -0.5F, 0.5F, 0.0F, 0.0F);
+        vertex(consumer, poseStack, matrix, -0.5F, -0.5F, 0.0F, 1.0F, alpha);
+        vertex(consumer, poseStack, matrix, 0.5F, -0.5F, 1.0F, 1.0F, alpha);
+        vertex(consumer, poseStack, matrix, 0.5F, 0.5F, 1.0F, 0.0F, alpha);
+        vertex(consumer, poseStack, matrix, -0.5F, 0.5F, 0.0F, 0.0F, alpha);
         bufferSource.endBatch(renderType);
         poseStack.popPose();
     }
@@ -122,15 +164,50 @@ public final class ClientLockOnEvents {
         return component < 1.0E-6D ? Double.POSITIVE_INFINITY : halfExtent / component;
     }
 
+    private static void advanceTransition() {
+        if (transition != CursorTransition.FADING_IN && transition != CursorTransition.FADING_OUT) {
+            return;
+        }
+        transitionTicks++;
+        if (transitionTicks < FADE_DURATION_TICKS) {
+            return;
+        }
+        if (transition == CursorTransition.FADING_IN) {
+            transition = CursorTransition.VISIBLE;
+        } else {
+            transition = CursorTransition.HIDDEN;
+            renderedEntityId = -1;
+        }
+        transitionTicks = FADE_DURATION_TICKS;
+    }
+
+    private static void resetCursor() {
+        lockedEntityId = -1;
+        renderedEntityId = -1;
+        transitionTicks = 0;
+        transition = CursorTransition.HIDDEN;
+    }
+
+    private static float smoothStep(float value) {
+        return value * value * (3.0F - 2.0F * value);
+    }
+
     private static void vertex(
             VertexConsumer consumer, PoseStack poseStack, Matrix4f matrix,
-            float x, float y, float u, float v
+            float x, float y, float u, float v, int alpha
     ) {
         consumer.addVertex(matrix, x, y, 0.0F)
-                .setColor(255, 255, 255, 235)
+                .setColor(255, 255, 255, alpha)
                 .setUv(u, v)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(0x00F000F0)
                 .setNormal(poseStack.last(), 0.0F, 0.0F, 1.0F);
+    }
+
+    private enum CursorTransition {
+        HIDDEN,
+        FADING_IN,
+        VISIBLE,
+        FADING_OUT
     }
 }

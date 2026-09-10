@@ -75,6 +75,7 @@ neoForge {
             gameDirectory = project.file('run-server')
             programArgument '--nogui'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            systemProperty 'railguncoin.disableGameTestRegistration', 'true'
         }
 
         // This run config launches GameTestServer and runs all registered gametests, then exits.
